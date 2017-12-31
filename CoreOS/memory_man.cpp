@@ -1,4 +1,4 @@
-#include "Dump.h"
+#include "memory_man.h"
 
 unsigned char memByteRam(const void* x) {return *(char*)x;}
 unsigned char memBytePgm(const void* x) {return pgm_read_byte(x);}
