@@ -296,7 +296,6 @@ int boot_verbose(){
       kernel.print(F("Failed to load baseband module. Aborting..."));
       return KERN_FAILURE;
     }
-    */
     kernel.setTextSize(2);
     delay(2000);
     micrOS_SwitchBoard(); //We can open the UI now.
