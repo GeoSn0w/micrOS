@@ -215,8 +215,6 @@ int boot_verbose(){
     delay(2000);
     kernel.fillScreen(BLACK);
     kernel.setTextSize(1);
-    /*
-    char buffer[8192] = { 0 };
     kernel.setCursor(2, 3);
     kernel.print(F("micrOS for Arduino MEGA"));
     delay(1000);
