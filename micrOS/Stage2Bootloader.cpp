@@ -1,11 +1,58 @@
 
 #include "Stage2Bootloader.h"
 #include "Kernel_Returns.h"
+#include <Flash.h>
+#include <avr/boot.h>
+#include <EEPROM.h>
+#include "DeviceTree.h"
+/*
+* SIGRD is a "must be zero" bit on most Arduino CPUs; can we read the sig or not?
+*/
+#if (!defined(SIGRD))
+#define SIGRD 5
+#endif
+extern MCUFRIEND_kbv IODisplay;
+byte signature1, signature2, signature3;
 
+void print_signature()
+{
+	signature1 = boot_signature_byte_get(0);
+	signature2 = boot_signature_byte_get(2);
+	signature3 = boot_signature_byte_get(4);
+
+	IODisplay.print(F("Device Signature: "));
+	IODisplay.print("0x");
+	IODisplay.print(signature1, HEX);
+	IODisplay.print(signature2, HEX);
+	IODisplay.print(signature3, HEX);
+	IODisplay.setCursor(2, 163);
+
+	if (signature1 == 0x1E) { // Got ATMEL!
+		switch (signature2) {
+		case 0x95:
+			if (signature3 == 0x0F)
+				IODisplay.print(F("Found Device: ATmega328P)"));
+			else if (signature3 == 0x14)
+				IODisplay.print(F("Found Device: ATmega328)"));
+			break;
+		case 0x98: // Got Mega?
+			if (signature3 == 0x1)
+				IODisplay.print(F("Found Device: ATmega2560)"));
+		    break;
+		}
+	}
+	else {
+		IODisplay.print(F("Could not parse device signature."));
+	}
+}
 int boot_verbose() {
-	extern MCUFRIEND_kbv IODisplay;
+	if (debug == 0x1) {
+		Serial.begin(9600);
+		Serial.println(F("micrOS Bootloader v1.003"));
+	}
 	uint16_t DisplayEngine = IODisplay.readID();
 	if (DisplayEngine == 0xEFEF) DisplayEngine = 0x9486;
+	Serial.println(F("micrOS is booting..."));
 		IODisplay.reset();
 		IODisplay.begin(DisplayEngine);
 		IODisplay.setRotation(1);
@@ -107,19 +154,10 @@ int boot_verbose() {
 		IODisplay.print(F("CPU_HALTED"));
 		return -1;
 	}
-	if (0) {
 		IODisplay.setCursor(2, 153);
-		IODisplay.print(F("Successfully loaded baseband module."));
-		delay(400);
-	}
-	else {
-		IODisplay.setCursor(2, 153);
-		IODisplay.print(F("[!] Failed to load baseband module. Aborting..."));
-		delay(400);
-	}
-	IODisplay.setTextSize(2);
-	//delay(2000);
-	//micrOS_SwitchBoard(); //We can open the UI now.
+		print_signature();
+	    delay(3000);
+		Serial.println(F("micrOS Environment is ready!"));
 	return;
 }
 kern_platform_t perform_sanity_chck() {

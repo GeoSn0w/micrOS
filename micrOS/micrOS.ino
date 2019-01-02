@@ -1,3 +1,5 @@
+#include "DeviceTree.h"
+#include "Kern_Errors.h"
 #include "micrOS_Apps.h"
 #include "micrOS_Graphics_Cache.h"
 #include <Vcc.h>
@@ -11,6 +13,10 @@
 #include <gfxfont.h>
 #include <Adafruit_SPITFT_Macros.h>
 #include <Adafruit_SPITFT.h>
+#include <Flash.h>
+#include <avr/boot.h>
+#include <EEPROM.h>
+#include "DeviceTree.h"
 #include <Adafruit_GFX.h>
 #include <TouchScreen.h>
 #include <MCUFRIEND_kbv.h>
@@ -20,6 +26,14 @@ TouchScreen ts = TouchScreen(XP, YP, XM, YM, 200); //Touch Panel initialization
 void setup() {
 	boot_verbose();
 	micrOS_SwitchBoard();
+	int i;
+	int unoSerial[6];
+	int startAddr = 1018;
+	unsigned long serno = 0;
+
+	for (i = 0; i < 6; i++) {
+		unoSerial[i] = EEPROM.read(startAddr + i);
+	}
 }
 
 // the loop function runs over and over again until power down or reset
@@ -27,12 +41,13 @@ void loop() {
 	TSPoint p = ts.getPoint();
 	AWAIT_TOUCH_SG();
 	if (p.z > MINPRESSURE && p.z < MAXPRESSURE) {
-		Serial.print("\nRegistered touch at X = "); Serial.print(p.x); Serial.print(" | Y = "); Serial.print(p.y);
-		if (p.x>919 && p.x<939 && p.y>887 && p.y<890 && inApp == 0) {
+		Serial.print(F("[TouchEvent] Registered touch at X = ")); Serial.print(p.x); Serial.print(F(" | Y = ")); Serial.println(p.y);
+		if (p.x>899 && p.x<942 && p.y>852 && p.y<900 && inApp == 0) {
+			Serial.println("[OverlaySwitchEvent] Menu has been launched.");
 			menu_init();
 		}
 		else if (p.x>875 && p.x<894 && p.y>907 && p.y<942 && inApp == 1) {
-			kernKillActiveApp();
+			
 		}
 		else if (p.x>457 && p.x<420 && p.y>450 && p.y<870 && isMenuOpen == true) {
 			//

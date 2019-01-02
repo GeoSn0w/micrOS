@@ -45,6 +45,12 @@
     <ClInclude Include="micrOS_Apps.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Kern_Errors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="kernel.cpp">
@@ -69,6 +75,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="micrOS_Apps.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Kern_Errors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -5,7 +5,8 @@
 
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
-void menu_init(void);
+    #include "kernel.h"
+kern_return_t menu_init(void);
 #else
 	#include "WProgram.h"
 #endif

@@ -5,9 +5,15 @@
 #include "micrOS_Apps.h"
 #include "IODisplay.h"
 #include "kernel.h"
+
 extern MCUFRIEND_kbv IODisplay;
-void menu_init() {
+
+kern_return_t menu_init() {
 	isMenuOpen = true; //We're in app.
+    IdentityCard = "PurpleMenu";
+	if (check_entitlements(false, true, true, true, true, true, true) != 1) {
+		return KERN_FAILURE;
+	}
 	IODisplay.drawRect(45, 54, 394, 202, 0x9CDD);
 	IODisplay.fillRect(46, 55, 392, 200, 0x8D3A);
 	IODisplay.drawBitmap(416, 60, close_button, 16, 16, WHITE);
@@ -23,6 +29,6 @@ void menu_init() {
 	IODisplay.drawBitmap(355, 85, calc_app, 64, 64, WHITE);
 	//No more icons.
 	AWAIT_TOUCH_SG(); //Wait for touch input.
-	return;
+	return KERN_SUCCESS;
 }
 

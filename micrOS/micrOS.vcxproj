@@ -93,7 +93,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\micrOS;$(ProjectDir)..\..\..\..\Arduino\libraries\Arduino_Vcc-master;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\SD;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\libraries\SPI\src;$(ProjectDir)..\..\..\..\Arduino\libraries\Adafruit GFX Library_ID13;$(ProjectDir)..\..\..\..\Arduino\libraries\TouchScreen;$(ProjectDir)..\..\..\..\Arduino\libraries\MCUFRIEND_kbv;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\SD\utility;$(ProjectDir)..\..\..\..\Arduino\libraries\MCUFRIEND_kbv\utility;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\libraries;$(ProjectDir)..\..\..\..\Arduino\libraries;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\variants\mega;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\tools\avr-gcc\5.4.0-atmel3.6.1-arduino2\avr\include;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\tools\avr-gcc\5.4.0-atmel3.6.1-arduino2\avr\include\avr;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\tools\avr-gcc\5.4.0-atmel3.6.1-arduino2\lib\gcc\avr\4.8.1\include;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\tools\avr-gcc\5.4.0-atmel3.6.1-arduino2\lib\gcc\avr\4.9.2\include;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\tools\avr-gcc\5.4.0-atmel3.6.1-arduino2\lib\gcc\avr\4.9.3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\micrOS;$(ProjectDir)..\..\..\..\Arduino\libraries\Arduino_Vcc-master;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\SD;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\libraries\SPI\src;$(ProjectDir)..\..\..\..\Arduino\libraries\Adafruit GFX Library_ID13;$(ProjectDir)..\..\..\..\Arduino\libraries\TouchScreen;$(ProjectDir)..\..\..\..\Arduino\libraries\MCUFRIEND_kbv;$(ProjectDir)..\..\..\..\Arduino\libraries\Flash-master;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\libraries\EEPROM\src;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\SD\utility;$(ProjectDir)..\..\..\..\Arduino\libraries\MCUFRIEND_kbv\utility;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\libraries;$(ProjectDir)..\..\..\..\Arduino\libraries;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\variants\mega;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\tools\avr-gcc\5.4.0-atmel3.6.1-arduino2\avr\include;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\tools\avr-gcc\5.4.0-atmel3.6.1-arduino2\avr\include\avr;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\tools\avr-gcc\5.4.0-atmel3.6.1-arduino2\lib\gcc\avr\4.8.1\include;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\tools\avr-gcc\5.4.0-atmel3.6.1-arduino2\lib\gcc\avr\4.9.2\include;$(ProjectDir)..\..\..\..\..\AppData\Local\arduino15\packages\arduino\tools\avr-gcc\5.4.0-atmel3.6.1-arduino2\lib\gcc\avr\4.9.3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>$(ProjectDir)__vm\.micrOS.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <PreprocessorDefinitions>__AVR_ATmega2560__;F_CPU=16000000L;ARDUINO=10808;ARDUINO_AVR_MEGA2560;ARDUINO_ARCH_AVR;__cplusplus=201103L;_VMICRO_INTELLISENSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -116,9 +116,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DeviceTree.h" />
     <ClInclude Include="IODisplay.h" />
     <ClInclude Include="kernel.h" />
     <ClInclude Include="Kernel_Returns.h" />
+    <ClInclude Include="Kern_Errors.h" />
     <ClInclude Include="micrOS_Apps.h" />
     <ClInclude Include="micrOS_Graphics_Cache.h" />
     <ClInclude Include="micrOS_Power_Management.h" />
@@ -127,9 +129,11 @@
     <ClInclude Include="__vm\.micrOS.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DeviceTree.cpp" />
     <ClCompile Include="IODisplay.cpp" />
     <ClCompile Include="kernel.cpp" />
     <ClCompile Include="Kernel_Returns.c" />
+    <ClCompile Include="Kern_Errors.cpp" />
     <ClCompile Include="micrOS_Apps.cpp" />
     <ClCompile Include="micrOS_Graphics_Cache.cpp" />
     <ClCompile Include="micrOS_Power_Management.cpp" />
