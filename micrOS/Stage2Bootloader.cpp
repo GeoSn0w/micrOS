@@ -5,12 +5,7 @@
 #include <avr/boot.h>
 #include <EEPROM.h>
 #include "DeviceTree.h"
-/*
-* SIGRD is a "must be zero" bit on most Arduino CPUs; can we read the sig or not?
-*/
-#if (!defined(SIGRD))
-#define SIGRD 5
-#endif
+
 extern MCUFRIEND_kbv IODisplay;
 byte signature1, signature2, signature3;
 
