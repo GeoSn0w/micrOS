@@ -8,6 +8,7 @@
 #include "micrOS_Storage.h"
 #include "Kernel_Returns.h"
 #include "Stage2Bootloader.h"
+#include <avr/wdt.h>
 #include "kernel.h"
 #include "IODisplay.h"
 #include <gfxfont.h>
@@ -24,6 +25,7 @@ extern MCUFRIEND_kbv IODisplay;
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 200); //Touch Panel initialization
 
 void setup() {
+	wdt_reset();
 	boot_verbose();
 	micrOS_SwitchBoard();
 	int i;
@@ -38,6 +40,7 @@ void setup() {
 
 // the loop function runs over and over again until power down or reset
 void loop() {
+	wdt_reset(); // Reset the watchdog
 	TSPoint p = ts.getPoint();
 	AWAIT_TOUCH_SG();
 	if (p.z > MINPRESSURE && p.z < MAXPRESSURE) {
