@@ -2,8 +2,6 @@
 #include <MCUFRIEND_kbv.h>
 #include "IODisplay.h"
 #include "Kern_Errors.h"
-
-//TODO: Should probably move these
 uint16_t BootMode = 0x00000;
 uint16_t debug = 0x01;
 uint8_t * heapptr, *stackptr, *R31;

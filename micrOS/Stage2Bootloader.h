@@ -6,6 +6,7 @@
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
     #include "kernel.h"
+    #include "Kernel_Returns.h"
     #include "IODisplay.h"
 int boot_verbose(void);
 kern_platform_t perform_sanity_chck(void);

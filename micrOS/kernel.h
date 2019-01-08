@@ -17,7 +17,6 @@
 extern String CURRENT_FOREGROUND_PID;
 extern uint16_t BootMode;
 extern uint16_t debug;
-typedef int kern_return_t;
 typedef int kern_platform_t;
 typedef int proc_return_t;
 typedef int task_return_t;

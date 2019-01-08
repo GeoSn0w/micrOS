@@ -161,7 +161,7 @@ int boot_verbose() {
 		IODisplay.print(F("Checking /dev/sda1..."));
 		IODisplay.setCursor(2, 113);
 		delay(400);
-		if (check_sda() == KERN_SUCCESS) {
+		if (initialize_storage_driver() == KERN_SUCCESS) {
 			IODisplay.print(F("Successfully mounted /dev/sda1!"));
 			delay(400);
 		}
