@@ -16,6 +16,7 @@ const int SD_CS = 10; //Pin 10 for MCUFRIEND's SDCard! Change accordingly.
 kern_return_t initialize_storage_driver() {
 	pinMode(SS, OUTPUT); //has to be set as output.
 	if (!SD.begin(SD_CS, 11, 12, 13)) {
+		Serial.println(F("Failed to initialize the card"));
 		return KERN_FAILURE; //We failed...
 	}
 	else {
@@ -49,20 +50,38 @@ kern_return_t getStorageMediaDevice() {
 	}
 	if (IOLowLevelVolume.init(MicroSD)) {
 		LowLevelDeviceProviderForIO.device_initialized = true;
+		Serial.println("SD Card initialized ");
 	}
 	else {
+		Serial.println("SD Card Type is not available");
 		return KERN_FAILURE;
 	}
 	LowLevelDeviceProviderForIO.volumeType = 1;
-	LowLevelDeviceProviderForIO.volumeTypeDec = (IOLowLevelVolume.fatType(), DEC);
+	LowLevelDeviceProviderForIO.volumeTypeDec = IOLowLevelVolume.fatType();
     VolumeSize =  IOLowLevelVolume.blocksPerCluster();     // Clusters = a collection of blocks
 	VolumeSize *= IOLowLevelVolume.clusterCount();         // Clusterfuck
-	VolumeSize *= 512;                                     // SD card blocks are always 512 bytes in size
-	LowLevelDeviceProviderForIO.volumeSizeInB = VolumeSize;
-	VolumeSize /= 1024;
+	VolumeSize /= 2;                                       // SD card => 512 bytes
 	LowLevelDeviceProviderForIO.volumeSizeInKB = VolumeSize;
-	VolumeSize /= 1024;
-	LowLevelDeviceProviderForIO.volumeSizeInMB = VolumeSize;
+	LowLevelDeviceProviderForIO.volumeSizeInGB = (float)VolumeSize / 1e+6;
+	LowLevelDeviceProviderForIO.BlocksCount = IOLowLevelVolume.blocksPerCluster() * IOLowLevelVolume.clusterCount();
+	return KERN_SUCCESS;
+}
+
+kern_return_t eraseStorageMediaAtPath() {
+	uint32_t const ERASE_SIZE = 262144L;
+	uint32_t firstBlock = 0;
+	uint32_t lastBlock;
+	uint16_t walk = 0;
+		do {
+			lastBlock = firstBlock + ERASE_SIZE - 1;
+			if (lastBlock >= MicroSD.cardSize()) lastBlock = MicroSD.cardSize() - 1;
+			if (!MicroSD.erase(firstBlock, lastBlock)) {
+				Serial.println(F("[StorageMediad] Failed to format SD card!"));
+			}
+			if ((walk++) % 32 == 31);
+			firstBlock += ERASE_SIZE;
+		} while (firstBlock < MicroSD.cardSize());
+	Serial.println(F("[StorageMediad] Successfully formatted SD card!"));
 	return KERN_SUCCESS;
 }
 

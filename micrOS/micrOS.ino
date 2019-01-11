@@ -1,3 +1,4 @@
+
 #include "DeviceTree.h"
 #include "Kern_Errors.h"
 #include "micrOS_Apps.h"
@@ -21,6 +22,7 @@
 #include <Adafruit_GFX.h>
 #include <TouchScreen.h>
 #include <MCUFRIEND_kbv.h>
+
 extern MCUFRIEND_kbv IODisplay;
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 200); //Touch Panel initialization
 
@@ -32,7 +34,9 @@ void setup() {
 	int unoSerial[6];
 	int startAddr = 1018;
 	unsigned long serno = 0;
-
+	inApp = 0;
+	extern struct registeredTouchFrameService RegisteredPolicies;
+	RegisteredPolicies.currentlyActiveOverlay = 0;
 	for (i = 0; i < 6; i++) {
 		unoSerial[i] = EEPROM.read(startAddr + i);
 	}
@@ -44,24 +48,13 @@ void loop() {
 	TSPoint p = ts.getPoint();
 	AWAIT_TOUCH_SG();
 	if (p.z > MINPRESSURE && p.z < MAXPRESSURE) {
+		p.x = map(p.x, TS_MINX, TS_MAXX, 0, IODisplay.width());  //This is necessary to be able to have proper touch control. Wish I knew this earlier...
+		p.y = map(p.y, TS_MINY, TS_MAXY, 0, IODisplay.height());
 		Serial.print(F("[TouchEvent] Registered touch at X = ")); Serial.print(p.x); Serial.print(F(" | Y = ")); Serial.println(p.y);
-		if (p.x>899 && p.x<942 && p.y>852 && p.y<900 && inApp == 0) {
-			Serial.println("[OverlaySwitchEvent] Menu has been launched.");
-			menu_init();
-		}
-		else if (p.x>875 && p.x<894 && p.y>907 && p.y<942 && inApp == 1) {
-			
-		}
-		else if (p.x>457 && p.x<420 && p.y>450 && p.y<870 && isMenuOpen == true) {
-			//
-		}
-		else if (p.x>450 && p.x<495 && p.y>788 && p.y<860 && isMenuOpen == true) {
-			Serial.print("\nTerminal App launched.");
-			AWAIT_TOUCH_SG();
-			inApp = 1;
-			//terminal_app();
-		}
+		touchEvalAtPoint(p);
+		//Moved to the kern.
 	}
+	/*
 	else if (p.x>317 && p.x<344 && p.y>454 && p.y<342 && isMenuOpen == true) {
 		Serial.print("\nMenu Close button pressed.");
 		IODisplay.fillRect(44, 53, 396, 172, TestMenuBG);
@@ -118,5 +111,5 @@ void loop() {
 		
 		// Claculator ->
 	}
-
+	*/
 }

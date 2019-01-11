@@ -2,6 +2,8 @@
 #include <MCUFRIEND_kbv.h>
 #include "IODisplay.h"
 #include "Kern_Errors.h"
+#include <TouchScreen.h>
+#include "micrOS_Apps.h"
 uint16_t BootMode = 0x00000;
 uint16_t debug = 0x01;
 uint8_t * heapptr, *stackptr, *R31;
@@ -121,6 +123,23 @@ void buildAlert(char message[], char sub[], char title[], int x, int y, int xsub
 }
 void kern_panic() { //Triggered when a fatal exception occurrs!
 	buildAlert("A fatal exception occurred!", generalAdvice, generalTitle, 78, 160, 70, 190, false);
+}
+struct registeredTouchFrameService RegisteredPolicies;
+
+kern_return_t touchEvalAtPoint(TSPoint p) {
+		switch (RegisteredPolicies.currentlyActiveOverlay) {
+		case 0:
+			if (menuButton) {
+				menu_init();
+				break;
+			}
+		case 1:
+			//close button
+			break;
+		default:
+			break;
+		}
+		return KERN_SUCCESS;
 }
 kern_return_t dump() {
 	IODisplay.fillScreen(TestMenuBG);

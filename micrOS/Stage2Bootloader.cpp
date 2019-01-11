@@ -110,6 +110,7 @@ int boot_verbose() {
 	if (debug == 0x1) {
 		Serial.begin(9600);
 		Serial.println(F("micrOS Bootloader v1.003"));
+		Serial.println(F("micrOS.Emily_kernel 1.4 micrOS MILDRED Kernel Version 1.4 TUE JANUARY 2 DEVELOPMENT"));
 	}
 	uint16_t DisplayEngine = IODisplay.readID();
 	if (DisplayEngine == 0xEFEF) DisplayEngine = 0x9486;

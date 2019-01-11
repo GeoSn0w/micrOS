@@ -7,6 +7,8 @@
 	#include "arduino.h"
     #include "kernel.h"
 kern_return_t menu_init(void);
+kern_return_t StorageSettings(void);
+int coreStorageEffaceableAlert(void);
 #else
 	#include "WProgram.h"
 #endif

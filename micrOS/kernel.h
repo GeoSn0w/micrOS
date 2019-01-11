@@ -6,9 +6,10 @@
 #include "micrOS_Graphics_Cache.h"
 #include "micrOS_Power_Management.h"
 #include "Kernel_Returns.h"
+#include <TouchScreen.h>
 #include "Kern_Errors.h"
 
-#define kMicroVersion "micrOS.Emily_kernel 1.3 micrOS Kernel Version 1.2 TUE JANUARY 2 DEVELOPMENT"
+#define kMicroVersion "micrOS.Emily_kernel 1.4 micrOS MILDRED Kernel Version 1.4 TUE JANUARY 2 DEVELOPMENT"
 #define kBootLoaderREV "micrOS BootLoader REV. 1.18.21, TUE December 19 DEVELOPMENT"
 #define kUSERNAME ">GeoSn0w"
 #define KERN_DEFAULT_CPU "ATmega1280"
@@ -31,6 +32,8 @@ kern_return_t kernel_I_haz_panic(String panic_reason);
 kern_return_t switchboard_set_bars(uint16_t UIColor);
 kern_return_t switchboard_set_misc(void);
 kern_return_t switchboard_set_wallpaper(void);
+kern_return_t touchEvalAtPoint(TSPoint p);
+kern_return_t set_bar_fill(uint16_t ThemeScheme);
 void switchboard_integrity_check(void);
 kern_return_t micrOS_SwitchBoard(void);
 kern_return_t AWAIT_TOUCH_SG(void);
