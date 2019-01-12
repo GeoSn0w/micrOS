@@ -23,7 +23,7 @@ struct Device {
 	bool  device_initialized = false;
 	uint32_t IOVolumeSize;
 };
-
+const int SD_CS = 10;
 #else
 	#include "WProgram.h"
 #endif

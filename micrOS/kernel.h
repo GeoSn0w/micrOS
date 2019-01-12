@@ -9,7 +9,7 @@
 #include <TouchScreen.h>
 #include "Kern_Errors.h"
 
-#define kMicroVersion "micrOS.Emily_kernel 1.4 micrOS MILDRED Kernel Version 1.4 TUE JANUARY 2 DEVELOPMENT"
+#define kMicroVersion "micrOS.Emily_kernel 1.4 micrOS Kernel Version 1.4 TUE JANUARY 2 DEVELOPMENT"
 #define kBootLoaderREV "micrOS BootLoader REV. 1.18.21, TUE December 19 DEVELOPMENT"
 #define kUSERNAME ">GeoSn0w"
 #define KERN_DEFAULT_CPU "ATmega1280"

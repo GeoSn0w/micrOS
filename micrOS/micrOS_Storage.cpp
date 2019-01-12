@@ -11,7 +11,7 @@ Sd2Card MicroSD;
 SdVolume IOLowLevelVolume;
 uint32_t VolumeSize;
 
-const int SD_CS = 10; //Pin 10 for MCUFRIEND's SDCard! Change accordingly.
+ //Pin 10 for MCUFRIEND's SDCard! Change accordingly.
 
 kern_return_t initialize_storage_driver() {
 	pinMode(SS, OUTPUT); //has to be set as output.

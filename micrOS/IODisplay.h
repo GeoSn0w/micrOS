@@ -26,10 +26,12 @@
 	#define LCD_D5 5
 	#define LCD_D6 6
 	#define LCD_D7 7
-	#define YP A1
-	#define XM A2
-	#define YM 7
-	#define XP 6
+
+	#define YP A2
+	#define XM A1
+	#define YM 6
+	#define XP 7
+
 // Colors
 	#define BLACK			0x0000
 	#define BLUE			0x001F
@@ -53,13 +55,19 @@ void testFontSizes(void);
 void testTriangles(void);
 void LCD_Test_Menu(void);
 int visuals_pbar(int rest);
+
 //Touch Screen
 #define MINPRESSURE 6
 #define MAXPRESSURE 1000
-#define TS_MINX 150
-#define TS_MINY 120
-#define TS_MAXX 920
-#define TS_MAXY 940
+
+#define TS_MINX  147
+#define TS_MINY  154
+#define TS_MAXX  942
+#define TS_MAXY  911
+
+#define RESOLUTION_W  480
+#define RESOLUTION_H  320
+
 struct registeredTouchFrameService {
 	/*
 	Overlay 0   -  Desktop, no app open
@@ -71,7 +79,7 @@ struct registeredTouchFrameService {
 #define cancelErase p.x>34 && p.x<447 && p.y>217 && p.y<274 && inApp == 1 // Cancel button, it will revert back to Core Storage Media
 
 	// Switchboard screen
-#define menuButton (p.x>10 && p.x<34 && p.y>292 && p.y<316 && inApp == 0) // Cancel button, it will revert back to Core Storage Media
+#define menuButton p.x>10 && p.x<34 && p.y>292 && p.y<316 && inApp == 0 // Cancel button, it will revert back to Core Storage Media
 	int currentlyActiveOverlay = 0;
 };
 #else

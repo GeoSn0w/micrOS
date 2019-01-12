@@ -24,22 +24,15 @@
 #include <MCUFRIEND_kbv.h>
 
 extern MCUFRIEND_kbv IODisplay;
-TouchScreen ts = TouchScreen(XP, YP, XM, YM, 200); //Touch Panel initialization
+TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300); //Touch Panel initialization
 
 void setup() {
 	wdt_reset();
 	boot_verbose();
 	micrOS_SwitchBoard();
-	int i;
-	int unoSerial[6];
-	int startAddr = 1018;
-	unsigned long serno = 0;
 	inApp = 0;
 	extern struct registeredTouchFrameService RegisteredPolicies;
 	RegisteredPolicies.currentlyActiveOverlay = 0;
-	for (i = 0; i < 6; i++) {
-		unoSerial[i] = EEPROM.read(startAddr + i);
-	}
 }
 
 // the loop function runs over and over again until power down or reset
@@ -48,8 +41,8 @@ void loop() {
 	TSPoint p = ts.getPoint();
 	AWAIT_TOUCH_SG();
 	if (p.z > MINPRESSURE && p.z < MAXPRESSURE) {
-		p.x = map(p.x, TS_MINX, TS_MAXX, 0, IODisplay.width());  //This is necessary to be able to have proper touch control. Wish I knew this earlier...
-		p.y = map(p.y, TS_MINY, TS_MAXY, 0, IODisplay.height());
+		p.x = map(p.x, TS_MINX, TS_MAXX, 0, RESOLUTION_W);  //This is necessary to be able to have proper touch control. Wish I knew this earlier...
+		p.y = map(p.y, TS_MAXY, TS_MINY, 0, RESOLUTION_H);
 		Serial.print(F("[TouchEvent] Registered touch at X = ")); Serial.print(p.x); Serial.print(F(" | Y = ")); Serial.println(p.y);
 		touchEvalAtPoint(p);
 		//Moved to the kern.
