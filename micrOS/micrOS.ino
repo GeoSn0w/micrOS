@@ -76,33 +76,5 @@ void loop() {
 		AWAIT_TOUCH_SG();
 
 	}
-	else if (p.x>458 && p.x<335 && p.y>262 && p.y<452 && low_battery_popup == true) {
-		Serial.print("\nClose button pressed.");
-		IODisplay.fillRect(44, 53, 396, 172, TestMenuBG);
-		switchboard_set_wallpaper();
-		low_battery_popup = false;
-		AWAIT_TOUCH_SG();
-
-	}
-	else if (p.x>458 && p.x<335 && p.y>262 && p.y<452 && isMenuOpen == true) {
-		Serial.print("\nMenu Close button pressed.");
-		IODisplay.fillRect(44, 53, 396, 172, TestMenuBG);
-		switchboard_set_wallpaper();
-		isMenuOpen = false;
-		AWAIT_TOUCH_SG();
-
-	}
-	else if (p.x>861 && p.x<895 && p.y>329 && p.y<369 && inApp == false) {
-		Serial.println("\nLaunching Terminal app...\n");
-		inApp = 1;
-		isMenuOpen = false;
-		//terminal_app();
-		AWAIT_TOUCH_SG();
-
-	}
-	else if (p.x>391 && p.x<453 && p.y>453 && p.y<520 && isMenuOpen == true) {
-		
-		// Claculator ->
-	}
 	*/
 }
