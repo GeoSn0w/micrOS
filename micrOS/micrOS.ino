@@ -1,4 +1,3 @@
-
 #include "DeviceTree.h"
 #include "Kern_Errors.h"
 #include "micrOS_Apps.h"
@@ -31,8 +30,6 @@ void setup() {
 	boot_verbose();
 	micrOS_SwitchBoard();
 	inApp = 0;
-	extern struct registeredTouchFrameService RegisteredPolicies;
-	RegisteredPolicies.currentlyActiveOverlay = 0;
 }
 
 // the loop function runs over and over again until power down or reset
@@ -41,8 +38,8 @@ void loop() {
 	TSPoint p = ts.getPoint();
 	AWAIT_TOUCH_SG();
 	if (p.z > MINPRESSURE && p.z < MAXPRESSURE) {
-		p.x = map(p.x, TS_MINX, TS_MAXX, 0, RESOLUTION_W);  //This is necessary to be able to have proper touch control. Wish I knew this earlier...
-		p.y = map(p.y, TS_MAXY, TS_MINY, 0, RESOLUTION_H);
+		p.x = constrain(map(p.x, TS_MAXX, TS_MINX, 0, RESOLUTION_W),0, RESOLUTION_W); //This is necessary to be able to have proper touch control. Wish I knew this earlier...
+		p.y = constrain(map(p.y, TS_MINY, TS_MAXY, 0, RESOLUTION_WH),0, RESOLUTION_H);
 		Serial.print(F("[TouchEvent] Registered touch at X = ")); Serial.print(p.x); Serial.print(F(" | Y = ")); Serial.println(p.y);
 		touchEvalAtPoint(p);
 		//Moved to the kern.
@@ -75,6 +72,34 @@ void loop() {
 		sleepNow();
 		AWAIT_TOUCH_SG();
 
+	}
+	else if (p.x>458 && p.x<335 && p.y>262 && p.y<452 && low_battery_popup == true) {
+		Serial.print("\nClose button pressed.");
+		IODisplay.fillRect(44, 53, 396, 172, TestMenuBG);
+		switchboard_set_wallpaper();
+		low_battery_popup = false;
+		AWAIT_TOUCH_SG();
+
+	}
+	else if (p.x>458 && p.x<335 && p.y>262 && p.y<452 && isMenuOpen == true) {
+		Serial.print("\nMenu Close button pressed.");
+		IODisplay.fillRect(44, 53, 396, 172, TestMenuBG);
+		switchboard_set_wallpaper();
+		isMenuOpen = false;
+		AWAIT_TOUCH_SG();
+
+	}
+	else if (p.x>861 && p.x<895 && p.y>329 && p.y<369 && inApp == false) {
+		Serial.println("\nLaunching Terminal app...\n");
+		inApp = 1;
+		isMenuOpen = false;
+		//terminal_app();
+		AWAIT_TOUCH_SG();
+
+	}
+	else if (p.x>391 && p.x<453 && p.y>453 && p.y<520 && isMenuOpen == true) {
+		
+		// Claculator ->
 	}
 	*/
 }

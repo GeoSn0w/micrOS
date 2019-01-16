@@ -27,11 +27,6 @@
 	#define LCD_D6 6
 	#define LCD_D7 7
 
-	#define YP A2
-	#define XM A1
-	#define YM 6
-	#define XP 7
-
 // Colors
 	#define BLACK			0x0000
 	#define BLUE			0x001F
@@ -57,31 +52,22 @@ void LCD_Test_Menu(void);
 int visuals_pbar(int rest);
 
 //Touch Screen
-#define MINPRESSURE 6
+#define XM A2  // must be an analog pin, use "An" notation!
+#define YP A1  // must be an analog pin, use "An" notation!
+#define XP 6   // can be a digital pin
+#define YM 7   // can be a digital pin too
+
+#define MINPRESSURE 15 // Do not set it to 0. That means no touch whatsoever.
 #define MAXPRESSURE 1000
 
-#define TS_MINX  147
-#define TS_MINY  154
-#define TS_MAXX  942
-#define TS_MAXY  911
+#define TS_MINX 163 // Bottom Right Corner
+#define TS_MAXX 942 // Top Left Corner
+#define TS_MINY 170 // Top Left Corner
+#define TS_MAXY 904 // Bottom Right Corner
 
-#define RESOLUTION_W  480
+#define RESOLUTION_W  480 // 3.5" Display
 #define RESOLUTION_H  320
 
-struct registeredTouchFrameService {
-	/*
-	Overlay 0   -  Desktop, no app open
-	Overlay 1   -  Menu open, not in app
-	*/
-	// Core Storage Media
-#define performErase p.x>34 && p.x<447 && p.y>217 && p.y<274 && inApp == 1 // Erase button, it will pop a warning.
-#define doErase p.x>34 && p.x<447 && p.y>217 && p.y<274 && inApp == 1 // Erase button, confirmed. This will start the obliteration.
-#define cancelErase p.x>34 && p.x<447 && p.y>217 && p.y<274 && inApp == 1 // Cancel button, it will revert back to Core Storage Media
-
-	// Switchboard screen
-#define menuButton p.x>10 && p.x<34 && p.y>292 && p.y<316 && inApp == 0 // Cancel button, it will revert back to Core Storage Media
-	int currentlyActiveOverlay = 0;
-};
 #else
 	#include "WProgram.h"
 #endif

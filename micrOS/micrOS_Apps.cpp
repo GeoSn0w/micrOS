@@ -11,11 +11,10 @@
 extern MCUFRIEND_kbv IODisplay;
 
 kern_return_t menu_init() {
-	isMenuOpen = true; //We're in app.
-    IdentityCard = "PurpleMenu";
-	if (check_entitlements(false, true, true, true, true, true, true) != 1) {
+	if (setCurrentForeGroundPID(1) != KERN_SUCCESS) {
 		return KERN_FAILURE;
 	}
+	isMenuOpen = 1; //We're in app.
 	IODisplay.drawRect(45, 54, 394, 202, 0x9CDD);
 	IODisplay.fillRect(46, 55, 392, 200, 0x8D3A);
 	IODisplay.drawBitmap(416, 60, close_button, 16, 16, WHITE);
@@ -23,7 +22,6 @@ kern_return_t menu_init() {
 	IODisplay.setCursor(50, 59);
 	IODisplay.setTextColor(WHITE);
 	IODisplay.print("MENU"); //Header
-						  //Icons beging now. Touch register knows what to look for because of isMenuOpen.
 	IODisplay.drawBitmap(68, 85, terminal_icon_big, 64, 64, WHITE);
 	IODisplay.drawBitmap(150, 85, files_big, 64, 64, WHITE);
 	IODisplay.drawBitmap(220, 85, settings_big, 64, 64, WHITE);
@@ -35,7 +33,7 @@ kern_return_t menu_init() {
 }
 
 int coreStorageEffaceableAlert() {
-	IODisplay.fillRoundRect(34, 36, 413, 240, 15, LessDarkPurple);
+	IODisplay.fillRoundRect(34, 36, 413, 240, 10, LessDarkPurple);
 	IODisplay.fillRoundRect(47, 218, 187, 50, 15, DarkPurple); // Erase card
 	IODisplay.setCursor(95, 231);
 	IODisplay.setTextSize(3);
@@ -51,10 +49,7 @@ int coreStorageEffaceableAlert() {
 	IODisplay.drawBitmap(214, 75, info_icon, 32, 32, WHITE);
 }
 kern_return_t StorageSettings() {
-	IdentityCard = "PurpleMenu";
-	if (check_entitlements(false, true, true, true, true, true, true) != 1) {
-		return KERN_FAILURE;
-	}
+	setCurrentForeGroundPID(10);
 	inApp = 1; //Will change the dock, prevent accidental touches on other stuff and listen to the app
 	set_bar_fill(LessDarkPurple);
 	switchboard_set_bars(LessDarkPurple);

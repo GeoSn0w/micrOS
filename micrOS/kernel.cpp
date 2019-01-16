@@ -14,9 +14,15 @@ bool SysSdutDownReqConfirm = false;
 bool isCharging = false;
 bool inApp = false;
 bool isWirelessConnected = false;
-proc_return_t PID = 0;
-ucred_identity_card_t IdentityCard;
-String CURRENT_FOREGROUND_PID = "com.micrOS.kernel";
+proc_t ForegroundPID = 99;
+
+kern_return_t setCurrentForeGroundPID(proc_t pid) {
+	if (pid != 0) {
+		ForegroundPID = pid;
+		return KERN_SUCCESS;
+	}
+	return KERN_FAILURE;
+}
 
 kern_return_t micrOS_SwitchBoard() { // micrOS Desktop
 	IODisplay.fillScreen(TestMenuBG);
@@ -60,7 +66,7 @@ kern_return_t kernel_I_haz_panic(String panic_reason) {
 	IODisplay.print(panic_reason);
 	IODisplay.print(")");
 }
-
+int issApp = 1;
 kern_return_t switchboard_set_misc() {
 	IODisplay.setTextColor(WHITE);
 	IODisplay.setCursor(215, 3);
@@ -124,18 +130,36 @@ void buildAlert(char message[], char sub[], char title[], int x, int y, int xsub
 void kern_panic() { //Triggered when a fatal exception occurrs!
 	buildAlert("A fatal exception occurred!", generalAdvice, generalTitle, 78, 160, 70, 190, false);
 }
-struct registeredTouchFrameService RegisteredPolicies;
 
 kern_return_t touchEvalAtPoint(TSPoint p) {
-		switch (RegisteredPolicies.currentlyActiveOverlay) {
-		case 0:
+		switch (ForegroundPID) {
+		case 99:
 			if (menuButton) {
 				menu_init();
 				break;
 			}
-		case 1:
+		case 2:
 			//close button
 			break;
+		// Settings 
+		case 1:
+			if (settingsApp) {
+				StorageSettings();
+				break;
+			}
+		case 10:
+			if (performErase) {
+				coreStorageEffaceableAlert();
+				break;
+			}
+			if (doErase) {
+				eraseStorageMediaAtPath();
+				break;
+			}
+			if (cancelErase) {
+				StorageSettings();
+				break;
+			}
 		default:
 			break;
 		}
@@ -179,8 +203,10 @@ kern_return_t shutdown() {
 	return;
 }
 kern_return_t AWAIT_TOUCH_SG() {
+	pinMode(YP, OUTPUT);      //restore shared pins
 	pinMode(XM, OUTPUT);
-	pinMode(YP, OUTPUT);
+	digitalWrite(YP, HIGH);   //because TFT control pins
+	digitalWrite(XM, HIGH);
 	return KERN_SUCCESS;
 }
 kern_return_t sigareport(int signal) {
@@ -209,142 +235,6 @@ kern_return_t kernDisplayReload() {
 	switchboard_set_misc();
 	get_battery_status();
 	return KERN_SUCCESS;
-}
-bool checkID(ucred_identity_card_t ID) {
-	Serial.print(F("[KERNEL] Performing Identity Check for app: "));
-	Serial.println(ID);
-	int overlay = 0;
-	if (ID == "PurpleCalc") {
-		overlay = 4;
-	}
-	else if (ID == "PurplePlayer") {
-		overlay = 5;
-	}
-	else if (ID == "PurpleFiles") {
-		overlay = 6;
-	}
-	else if (ID == "PurpleTerminal") {
-		overlay = 3;
-	}
-	else if (ID == "PurpleTest") {
-		overlay = 7;
-	}
-	else if (ID == "PurpleSettings") {
-		overlay = 8;
-	}
-	else if (ID == "PurpleMenu") {
-		overlay = 9;
-	}
-	else {
-		overlay = 0;
-	}
-	Serial.print("[KERNEL] New App Overlay is  ");
-	Serial.println(overlay);
-	switch (overlay) {
-	case 4: CURRENT_FOREGROUND_PID = "com.micrOS.purplecalc";
-		PID = 4;
-		return KERN_SUCCESS;
-	case 5: CURRENT_FOREGROUND_PID = "com.micrOS.purpleplayer";
-		PID = 5;
-		return KERN_SUCCESS;
-	case 6: CURRENT_FOREGROUND_PID = "com.micrOS.purplefiles";
-		PID = 6;
-		return KERN_SUCCESS;
-	case 3: CURRENT_FOREGROUND_PID = "com.micrOS.terminal";
-		PID = 3;
-		return KERN_SUCCESS;
-	case 7: CURRENT_FOREGROUND_PID = "com.micrOS.FactoryFA";
-		PID = 7;
-		return KERN_SUCCESS;
-	case 8: CURRENT_FOREGROUND_PID = "com.micrOS.Settings";
-		PID = 8;
-		return KERN_SUCCESS;
-	case 9: CURRENT_FOREGROUND_PID = "com.micrOS.PurpleMenu";
-		PID = 9;
-		return KERN_SUCCESS;
-	case 0: CURRENT_FOREGROUND_PID = "com.micrOS.kernel";
-		PID = 0; // PID 0 => The kernel itself, so yeah...
-		return KERN_FAILURE; //Something is not right down here.
-	}
-}
-ucred_t check_entitlements(bool isDebugged, bool isSystemApp, bool hasCustomTheme, bool hasFileSystemAccess, bool writesEEPROM, bool readsEEPROM, bool hasGPIOAccess) {
-	Serial.print(F("[KERNEL] Performing entitlements check for "));
-	Serial.println(IdentityCard);
-	if (checkID(IdentityCard) != KERN_SUCCESS) {
-		kernel_I_haz_panic(APPID_ERR);
-		return KERN_FAILURE;
-	}
-	bool appShouldRun = true;
-	if (isDebugged && debug == 0x1 && KERN_FUSE == "DEVELOPMENT") {
-		appShouldRun = true;
-	}
-	else if (isDebugged && debug != 0x1 || KERN_FUSE != "DEVELOPMENT") {
-		appShouldRun = false;
-		kernel_I_haz_panic(ENTITLEMENT_ERROR);
-		return 0x00000000;
-	}
-	else if (!isDebugged) {
-		appShouldRun = true;
-	}
-	if (isSystemApp) {
-		appShouldRun = true;
-	}
-	else if (!isSystemApp && hasGPIOAccess) {
-		appShouldRun = false;
-		kernel_I_haz_panic(ENTITLEMENT_ERROR);
-		return 0x00000000;
-	}
-	if (hasGPIOAccess && isSystemApp) {
-		appShouldRun = true;
-	}
-	else if (!hasGPIOAccess && isSystemApp) {
-		appShouldRun = true;
-	}
-	else if (hasGPIOAccess && !isSystemApp) {
-		appShouldRun = false;
-		kernel_I_haz_panic(ENTITLEMENT_ERROR);
-		return 0x00000000;
-	}
-	if (hasCustomTheme) {
-		//In this case, the App will specify a custom color scheme at runtime.
-		appShouldRun = true;
-	}
-	else {
-		switchboard_set_bars(0x5454); //We default to micrOS Blue.
-		appShouldRun = true;
-	}
-	if (hasFileSystemAccess && isSystemApp) {
-		appShouldRun = true;
-	}
-	else {
-		kernel_I_haz_panic(ENTITLEMENT_ERROR);
-		return 0x00000000; //You're not allowed to access the ROOT FS.
-	}
-	if (writesEEPROM && isSystemApp) {
-		appShouldRun = true;
-	}
-	else {
-		appShouldRun = false;
-		kernel_I_haz_panic(ENTITLEMENT_ERROR);
-		return 0x00000000; //You're not allowed to access the EEPROM
-	}
-	if (readsEEPROM && isSystemApp) {
-		appShouldRun = true;
-	}
-	else {
-		kernel_I_haz_panic(ENTITLEMENT_ERROR);
-		return 0x00000000; //You're not allowed to access the EEPROM
-	}
-	if (appShouldRun) {
-		Serial.println(F("[KERNEL] App successfully passed sanity checks in kernel. App is starting now..."));
-		return 1;
-	}
-	else {
-		Serial.println(F("[KERNEL] App failed sanity checks in kernel and it will not start."));
-		kernel_I_haz_panic(ENTITLEMENT_ERROR);
-		return 0x00000000;
-		sigabrt(9);
-	}
 }
 kern_return_t sigabrt(kern_return_t panic_reason) {
 	

@@ -15,7 +15,6 @@
 #define KERN_DEFAULT_CPU "ATmega1280"
 #define KERN_SUPPORTED_ARCH "AVR"//Ls20
 #define KERN_FUSE "DEVELOPMENT" //should be changed to RELEASE to disable verbose boot
-extern String CURRENT_FOREGROUND_PID;
 extern uint16_t BootMode;
 extern uint16_t debug;
 typedef int kern_platform_t;
@@ -26,8 +25,6 @@ typedef int proc_t;
 typedef uint8_t ucred_t;
 typedef uint8_t proc_lifetime_t;
 typedef String ucred_identity_card_t;
-extern ucred_identity_card_t IdentityCard;
-ucred_t check_entitlements(bool isDebugged, bool isSystemApp, bool hasCustomTheme, bool hasFileSystemAccess, bool writesEEPROM, bool readsEEPROM, bool hasGPIOAccess);
 kern_return_t kernel_I_haz_panic(String panic_reason);
 kern_return_t switchboard_set_bars(uint16_t UIColor);
 kern_return_t switchboard_set_misc(void);
@@ -42,9 +39,11 @@ kern_return_t kernDisplayReload(void);
 kern_return_t sigabrt(kern_return_t panic_reason);
 kern_return_t kernRegisterNewApp(void);
 kern_return_t sigareport(int signal);
+extern int issApp;
 kern_return_t kernKillActiveApp(void);
 kern_return_t shutdown(void);
-bool checkID(ucred_identity_card_t);
+kern_return_t setCurrentForeGroundPID(proc_t pid);
+extern proc_t ForegroundPID;
 extern bool isMenuOpen;
 extern bool SysSdutDownReqConfirm;
 extern bool isCharging;
