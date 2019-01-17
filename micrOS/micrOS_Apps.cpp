@@ -33,6 +33,8 @@ kern_return_t menu_init() {
 }
 
 int coreStorageEffaceableAlert() {
+	isAlert = 1;
+	setCurrentForeGroundPID(11);
 	IODisplay.fillRoundRect(34, 36, 413, 240, 10, LessDarkPurple);
 	IODisplay.fillRoundRect(47, 218, 187, 50, 15, DarkPurple); // Erase card
 	IODisplay.setCursor(95, 231);
@@ -47,6 +49,7 @@ int coreStorageEffaceableAlert() {
 	IODisplay.setCursor(101, 170);
 	IODisplay.print(F("Do you want to continue?"));
 	IODisplay.drawBitmap(214, 75, info_icon, 32, 32, WHITE);
+	isAlert = 0;
 }
 kern_return_t StorageSettings() {
 	setCurrentForeGroundPID(10);

@@ -44,6 +44,7 @@ kern_return_t kernKillActiveApp(void);
 kern_return_t shutdown(void);
 kern_return_t setCurrentForeGroundPID(proc_t pid);
 extern proc_t ForegroundPID;
+extern int isAlert;
 extern bool isMenuOpen;
 extern bool SysSdutDownReqConfirm;
 extern bool isCharging;

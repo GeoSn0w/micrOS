@@ -14,6 +14,7 @@ bool SysSdutDownReqConfirm = false;
 bool isCharging = false;
 bool inApp = false;
 bool isWirelessConnected = false;
+int isAlert = 0;
 proc_t ForegroundPID = 99;
 
 kern_return_t setCurrentForeGroundPID(proc_t pid) {
@@ -25,6 +26,8 @@ kern_return_t setCurrentForeGroundPID(proc_t pid) {
 }
 
 kern_return_t micrOS_SwitchBoard() { // micrOS Desktop
+	inApp = 0;
+	setCurrentForeGroundPID(99);
 	IODisplay.fillScreen(TestMenuBG);
 	switchboard_set_bars(0x5454);
 	IODisplay.setCursor(1, 4);
@@ -132,6 +135,10 @@ void kern_panic() { //Triggered when a fatal exception occurrs!
 }
 
 kern_return_t touchEvalAtPoint(TSPoint p) {
+	    if (appExitButton) {
+			micrOS_SwitchBoard();
+			return KERN_SUCCESS;
+		}
 		switch (ForegroundPID) {
 		case 99:
 			if (menuButton) {
@@ -144,22 +151,26 @@ kern_return_t touchEvalAtPoint(TSPoint p) {
 		// Settings 
 		case 1:
 			if (settingsApp) {
+				Serial.println("Alert1 button");
 				StorageSettings();
-				break;
 			}
+			break;
 		case 10:
-			if (performErase) {
+			if (isAlert != 1 && performErase) {
+				Serial.println("Alert button");
 				coreStorageEffaceableAlert();
-				break;
 			}
-			if (doErase) {
+			break;
+		case 11:
+		    if (doErase) {
+				Serial.println("Erase button");
 				eraseStorageMediaAtPath();
-				break;
 			}
-			if (cancelErase) {
+			else if (cancelErase) {
+				Serial.println("Cancel button");
 				StorageSettings();
-				break;
 			}
+			break;
 		default:
 			break;
 		}

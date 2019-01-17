@@ -32,14 +32,13 @@ void setup() {
 	inApp = 0;
 }
 
-// the loop function runs over and over again until power down or reset
 void loop() {
 	wdt_reset(); // Reset the watchdog
 	TSPoint p = ts.getPoint();
 	AWAIT_TOUCH_SG();
 	if (p.z > MINPRESSURE && p.z < MAXPRESSURE) {
 		p.x = constrain(map(p.x, TS_MAXX, TS_MINX, 0, RESOLUTION_W),0, RESOLUTION_W); //This is necessary to be able to have proper touch control. Wish I knew this earlier...
-		p.y = constrain(map(p.y, TS_MINY, TS_MAXY, 0, RESOLUTION_WH),0, RESOLUTION_H);
+		p.y = constrain(map(p.y, TS_MINY, TS_MAXY, 0, RESOLUTION_H),0, RESOLUTION_H);
 		Serial.print(F("[TouchEvent] Registered touch at X = ")); Serial.print(p.x); Serial.print(F(" | Y = ")); Serial.println(p.y);
 		touchEvalAtPoint(p);
 		//Moved to the kern.

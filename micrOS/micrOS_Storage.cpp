@@ -77,11 +77,11 @@ kern_return_t eraseStorageMediaAtPath() {
 			if (lastBlock >= MicroSD.cardSize()) lastBlock = MicroSD.cardSize() - 1;
 			if (!MicroSD.erase(firstBlock, lastBlock)) {
 				Serial.println(F("[StorageMediad] Failed to format SD card!"));
+				return KERN_FAILURE;
 			}
 			if ((walk++) % 32 == 31);
 			firstBlock += ERASE_SIZE;
 		} while (firstBlock < MicroSD.cardSize());
-	Serial.println(F("[StorageMediad] Successfully formatted SD card!"));
 	return KERN_SUCCESS;
 }
 
