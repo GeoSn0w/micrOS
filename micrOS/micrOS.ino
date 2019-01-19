@@ -40,7 +40,9 @@ void loop() {
 	if (p.z > MINPRESSURE && p.z < MAXPRESSURE) {
 		p.x = constrain(map(p.x, TS_MAXX, TS_MINX, 0, RESOLUTION_W),0, RESOLUTION_W); //This is necessary to be able to have proper touch control. Wish I knew this earlier...
 		p.y = constrain(map(p.y, TS_MINY, TS_MAXY, 0, RESOLUTION_H),0, RESOLUTION_H);
+#ifdef EMILY_KERN_DEBUG
 		Serial.print(F("[TouchEvent] Registered touch at X = ")); Serial.print(p.x); Serial.print(F(" | Y = ")); Serial.println(p.y);
+#endif
 		touchEvalAtPoint(p);
 		//Moved to the kern.
 	}

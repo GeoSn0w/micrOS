@@ -277,12 +277,19 @@ void loadSettings() {
 		return;
 	}
 #ifdef EMILY_KERN_DEBUG
-	Serial.print(F("Parsed Username is: "));
+	Serial.print(F("Parsing user configuration file from SD Card: "));
+	Serial.println(F("CONFIG.CFG"));
+	Serial.print(F("   Parsed Username is: "));
 	Serial.println(userdata.username);
-	Serial.print(F("Parsed Theme ID is: "));
+	Serial.print(F("   Parsed Theme ID is: "));
 	Serial.println(userdata.current_theme_id);
-	Serial.print(F("Is Developer Mode Enabled: "));
-	Serial.println(userdata.is_developer_mode);
+	Serial.print(F("   Is Developer Mode Enabled: "));
+	if (userdata.is_developer_mode == 0) {
+		Serial.println(F("Nope"));
+	}
+	else {
+		Serial.println(F("Yep"));
+	}
 #endif
 	return;
 }
@@ -317,5 +324,8 @@ kern_return_t get_user_config(const char config_file_ds[])
 		}
 	}
 	user_config_file.end();
+#ifdef EMILY_KERN_DEBUG
+	Serial.print("[configd] Successfully parsed configuration file. ");
+#endif
 	return KERN_SUCCESS;
 }
