@@ -1,7 +1,3 @@
-// 
-// 
-// 
-
 #include "micrOS_Apps.h"
 #include "IODisplay.h"
 #include "kernel.h"

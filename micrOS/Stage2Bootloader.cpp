@@ -86,6 +86,16 @@ void get_device_signature()
 		IODisplay.print(F("Could not parse device signature."));
 	}
 	IODisplay.setCursor(2, 173);
+#ifdef EMILY_KERN_DEBUG
+	Serial.print(F("Configuration Details: LockBits = 0x"));
+	Serial.print(lockBits, HEX);
+	Serial.print(F(" | Extended Fuse = 0x"));
+	Serial.print(ExtFuse, HEX);
+	Serial.print(F(" | High Fuse = 0x"));
+	Serial.print(HighFuse, HEX);
+	Serial.print(F(" | Low Fuse = 0x"));
+	Serial.println(LowFuse, HEX);
+#endif
 	IODisplay.print("LockBits = 0x");
 	IODisplay.print(lockBits, HEX);
 	IODisplay.setCursor(2, 183);
@@ -97,24 +107,35 @@ void get_device_signature()
 	IODisplay.print(" | Low Fuse = 0x");
 	IODisplay.print(LowFuse, HEX);
 	IODisplay.setCursor(2, 203);
-	IODisplay.print("Device Serial Number : ");
-
+	IODisplay.print("Device Serial Number: ");
+#ifdef EMILY_KERN_DEBUG
+	Serial.print(F("Device Serial Number: "));
+#endif
 	for (uint8_t i = 14; i < 24; i += 1) {
 		IODisplay.print(" 0x");
 		IODisplay.print(boot_signature_byte_get(i), HEX);
+#ifdef EMILY_KERN_DEBUG
+		Serial.print(boot_signature_byte_get(i), HEX);
+		Serial.print(" ");
+#endif
 	}
+#ifdef EMILY_KERN_DEBUG
+	Serial.println();
+#endif
 	return;
 }
 
 int boot_verbose() {
-	if (debug == 0x1) {
+#ifdef EMILY_KERN_DEBUG
 		Serial.begin(9600);
-		Serial.println(F("micrOS Bootloader v1.003"));
-		Serial.println(F("micrOS.Emily_kernel 1.4 micrOS MILDRED Kernel Version 1.4 TUE JANUARY 2 DEVELOPMENT"));
-	}
+		Serial.println(F("micrOS Anna Bootloader v1.031"));
+		Serial.println(F("micrOS Emily Kernel 1.4  |  micrOS Kernel Version 1.4 SAT JANUARY 19 DEVELOPMENT"));
+#endif
 	uint16_t DisplayEngine = IODisplay.readID();
 	if (DisplayEngine == 0xEFEF) DisplayEngine = 0x9486;
+#ifdef EMILY_KERN_DEBUG
 	Serial.println(F("micrOS is booting..."));
+#endif
 		IODisplay.reset();
 		IODisplay.begin(DisplayEngine);
 		IODisplay.setRotation(1);
@@ -127,6 +148,9 @@ int boot_verbose() {
 		IODisplay.fillScreen(BLACK);
 		IODisplay.setTextSize(1);
 		IODisplay.setCursor(2, 3);
+#ifdef EMILY_KERN_DEBUG
+		Serial.println(F("micrOS for Arduino MEGA"));
+#endif
 		IODisplay.print(F("micrOS for Arduino MEGA"));
 		delay(1000);
 		IODisplay.setCursor(2, 13);
@@ -139,8 +163,12 @@ int boot_verbose() {
 		IODisplay.print(F("Detecting device in Kernel Mode..."));
 		delay(200);
 		IODisplay.setCursor(2, 43);
-		IODisplay.print(F("Loaded kernel Display for IODisplay component with ID: 0x"));
+		IODisplay.print(F("Loaded Display driver for IODisplay component with ID: 0x"));
 		IODisplay.println(DisplayEngine, HEX);
+#ifdef EMILY_KERN_DEBUG
+		Serial.print(F("Loaded Display driver for IODisplay component with ID: 0x"));
+		Serial.println(DisplayEngine, HEX);
+#endif
 		delay(200);
 		IODisplay.setCursor(2, 53);
 		IODisplay.print(F("Loading micrOS RGB Color Descriptors for IODisplay..."));
@@ -172,12 +200,23 @@ int boot_verbose() {
 			delay(400);
 		}
 		IODisplay.setCursor(2, 123);
+#ifdef EMILY_KERN_DEBUG
+		Serial.println(F("Platform config has arrived!"));
+		Serial.println(F("Smoking MarijuanAVR..."));
+		Serial.print(F("Platform Expert configuration received matches device of type: "));
+		Serial.println(KERN_DEFAULT_CPU);
+		Serial.print(F("Platform Expert configuration received matches architeture of type: "));
+		Serial.println(KERN_SUPPORTED_ARCH);
+#endif
 		IODisplay.print(F("Platform config has arrived!"));
 		delay(1000);
 	}
 	else {
 		IODisplay.setCursor(2, 103);
 		delay(400);
+#ifdef EMILY_KERN_DEBUG
+		Serial.println(F("Checking /dev/sda1..."));
+#endif
 		IODisplay.print(F("Checking /dev/sda1..."));
 		IODisplay.setCursor(2, 113);
 		delay(400);
@@ -187,6 +226,9 @@ int boot_verbose() {
 		}
 		else {
 			IODisplay.setCursor(2, 113);
+#ifdef EMILY_KERN_DEBUG
+			Serial.println(F("[!] Failed to mount /dev/sda1! Storage media not ready!"));
+#endif
 			IODisplay.print(F("[!] Failed to mount /dev/sda1! Storage media not ready!"));
 			delay(400);
 		}
@@ -220,7 +262,11 @@ int boot_verbose() {
 		get_device_signature();
 	    delay(3000); // Just enough to be able to read the fuses.
 		setup_WatchDog_ForSession(); // Do not set earlier unless you perfectly time the resets of the watchdog timer.
+#ifdef EMILY_KERN_DEBUG
 		Serial.println(F("micrOS Environment is ready!"));
+		Serial.print(F("micrOS User is "));
+		Serial.println(kUSERNAME);
+#endif
 	return;
 }
 kern_platform_t perform_sanity_chck() {

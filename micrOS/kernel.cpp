@@ -5,7 +5,6 @@
 #include <TouchScreen.h>
 #include "micrOS_Apps.h"
 uint16_t BootMode = 0x00000;
-uint16_t debug = 0x01;
 uint8_t * heapptr, *stackptr, *R31;
 int kern_err_count = 0;
 MCUFRIEND_kbv IODisplay;
@@ -28,6 +27,9 @@ kern_return_t setCurrentForeGroundPID(proc_t pid) {
 kern_return_t micrOS_SwitchBoard() { // micrOS Desktop
 	inApp = 0;
 	setCurrentForeGroundPID(99);
+#ifdef EMILY_KERN_DEBUG
+	Serial.println(F("[switchboardd] Foreground process changed to Switchboard"));
+#endif
 	IODisplay.fillScreen(TestMenuBG);
 	switchboard_set_bars(0x5454);
 	IODisplay.setCursor(1, 4);
@@ -151,23 +153,19 @@ kern_return_t touchEvalAtPoint(TSPoint p) {
 		// Settings 
 		case 1:
 			if (settingsApp) {
-				Serial.println("Alert1 button");
 				StorageSettings();
 			}
 			break;
 		case 10:
 			if (isAlert != 1 && performErase) {
-				Serial.println("Alert button");
 				coreStorageEffaceableAlert();
 			}
 			break;
 		case 11:
 		    if (doErase) {
-				Serial.println("Erase button");
 				eraseStorageMediaAtPath();
 			}
 			else if (cancelErase) {
-				Serial.println("Cancel button");
 				StorageSettings();
 			}
 			break;
@@ -197,7 +195,6 @@ kern_return_t getAvailableMemory() {
 	extern int __heap_start, *__brkval;
 	int v;
 	return (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
-	return KERN_SUCCESS;
 }
 kern_return_t shutdown() {
 	IODisplay.drawRect(45, 54, 394, 202, 0xE2EE);
@@ -221,10 +218,10 @@ kern_return_t AWAIT_TOUCH_SG() {
 	return KERN_SUCCESS;
 }
 kern_return_t sigareport(int signal) {
-	if (debug == 0x01 && KERN_FUSE == "DEVELOPMENT") {
+#ifdef EMILY_KERN_DEBUG
 		Serial.println("[FAILURE] The application was terminated. SIGABRT ");
 		Serial.print(signal);
-	}
+#endif
 	return KERN_SUCCESS;
 }
 kern_return_t kernRegisterNewApp() {
@@ -248,7 +245,9 @@ kern_return_t kernDisplayReload() {
 	return KERN_SUCCESS;
 }
 kern_return_t sigabrt(kern_return_t panic_reason) {
-	
+#ifdef EMILY_KERN_DEBUG
+	Serial.println(F("[Kernel] Process error occured."));
+#endif
 	switch (panic_reason) {
 	case 1: buildAlert("Something went damn wrong!!", "Please restart your program.", "[!] Application Error", 78, 160, 70, 190, true);
 		sigareport(1);

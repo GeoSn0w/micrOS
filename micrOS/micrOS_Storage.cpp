@@ -1,11 +1,10 @@
 // 
 // micrOS Storage Media System
 // 
-
+#include <SD.h>
 #include "micrOS_Storage.h"
 #include "kernel.h"
 #include "Kernel_Returns.h"
-#include <SD.h>
 
 Sd2Card MicroSD;
 SdVolume IOLowLevelVolume;
@@ -14,9 +13,13 @@ uint32_t VolumeSize;
  //Pin 10 for MCUFRIEND's SDCard! Change accordingly.
 
 kern_return_t initialize_storage_driver() {
-	pinMode(SS, OUTPUT); //has to be set as output.
-	if (!SD.begin(SD_CS, 11, 12, 13)) {
+	SPI.begin();
+	pinMode(10, OUTPUT);
+	digitalWrite(10, HIGH);
+	if (!SD.begin(10, 11, 12, 13)) {
+#ifdef EMILY_KERN_DEBUG
 		Serial.println(F("Failed to initialize the card"));
+#endif
 		return KERN_FAILURE; //We failed...
 	}
 	else {
@@ -31,7 +34,9 @@ struct Device LowLevelDeviceProviderForIO;
 
 kern_return_t getStorageMediaDevice() {
 	while (!MicroSD.init(SPI_HALF_SPEED, 10, 11, 12, 13)) {
+#ifdef EMILY_KERN_DEBUG
 		Serial.println(F("Failed to initialize the card, please make sure it is plugged in, and the Chip Select is properly specified!"));
+#endif
 		return KERN_FAILURE;
 	}
 	switch (MicroSD.type()) {
@@ -50,10 +55,11 @@ kern_return_t getStorageMediaDevice() {
 	}
 	if (IOLowLevelVolume.init(MicroSD)) {
 		LowLevelDeviceProviderForIO.device_initialized = true;
-		Serial.println("SD Card initialized ");
 	}
 	else {
+#ifdef EMILY_KERN_DEBUG
 		Serial.println("SD Card Type is not available");
+#endif
 		return KERN_FAILURE;
 	}
 	LowLevelDeviceProviderForIO.volumeType = 1;
@@ -64,6 +70,23 @@ kern_return_t getStorageMediaDevice() {
 	LowLevelDeviceProviderForIO.volumeSizeInKB = VolumeSize;
 	LowLevelDeviceProviderForIO.volumeSizeInGB = (float)VolumeSize / 1e+6;
 	LowLevelDeviceProviderForIO.BlocksCount = IOLowLevelVolume.blocksPerCluster() * IOLowLevelVolume.clusterCount();
+#ifdef EMILY_KERN_DEBUG
+	Serial.println("[storagemediad] SD Card initialized.");
+	Serial.print("[storagemediad] Mounted Storage Media type: ");
+	Serial.println(LowLevelDeviceProviderForIO.device_type);
+	Serial.print("[storagemediad] Partition Style: FAT");
+	Serial.println(LowLevelDeviceProviderForIO.volumeTypeDec);
+	Serial.print("[storagemediad] Volume size: ");
+	Serial.print(LowLevelDeviceProviderForIO.volumeSizeInKB);
+	Serial.println(" Kilobytes");
+	Serial.print("[storagemediad] Volume size: ");
+	Serial.print(LowLevelDeviceProviderForIO.volumeSizeInGB);
+	Serial.println(" Gigabytes");
+	Serial.print("[storagemediad] Clusters: ");
+	Serial.println(IOLowLevelVolume.clusterCount());
+	Serial.print("[storagemediad] Blocks per cluster: ");
+	Serial.println(LowLevelDeviceProviderForIO.BlocksCount);
+#endif
 	return KERN_SUCCESS;
 }
 
@@ -76,7 +99,9 @@ kern_return_t eraseStorageMediaAtPath() {
 			lastBlock = firstBlock + ERASE_SIZE - 1;
 			if (lastBlock >= MicroSD.cardSize()) lastBlock = MicroSD.cardSize() - 1;
 			if (!MicroSD.erase(firstBlock, lastBlock)) {
+#ifdef EMILY_KERN_DEBUG
 				Serial.println(F("[StorageMediad] Failed to format SD card!"));
+#endif
 				return KERN_FAILURE;
 			}
 			if ((walk++) % 32 == 31);

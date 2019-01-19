@@ -8,15 +8,13 @@
 #include "Kernel_Returns.h"
 #include <TouchScreen.h>
 #include "Kern_Errors.h"
-
+#define EMILY_KERN_DEBUG
 #define kMicroVersion "micrOS.Emily_kernel 1.4 micrOS Kernel Version 1.4 TUE JANUARY 2 DEVELOPMENT"
 #define kBootLoaderREV "micrOS BootLoader REV. 1.18.21, TUE December 19 DEVELOPMENT"
 #define kUSERNAME ">GeoSn0w"
-#define KERN_DEFAULT_CPU "ATmega1280"
+#define KERN_DEFAULT_CPU "ATmega2560"
 #define KERN_SUPPORTED_ARCH "AVR"//Ls20
-#define KERN_FUSE "DEVELOPMENT" //should be changed to RELEASE to disable verbose boot
 extern uint16_t BootMode;
-extern uint16_t debug;
 typedef int kern_platform_t;
 typedef int proc_return_t;
 typedef int task_return_t;
