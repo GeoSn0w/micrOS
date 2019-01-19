@@ -245,7 +245,7 @@ int boot_verbose() {
 	delay(400);
 	if (true) { //Disabled for the moment because I have to reimplement these checks somewhere else.
 		IODisplay.setCursor(2, 143);
-		IODisplay.print(F("Successfully micrOS."));
+		IODisplay.print(F("Successfully started micrOS."));
 		delay(200);
 	}
 	else {
@@ -259,13 +259,14 @@ int boot_verbose() {
 		return -1;
 	}
 		IODisplay.setCursor(2, 153);
+		loadSettings();
 		get_device_signature();
 	    delay(3000); // Just enough to be able to read the fuses.
 		setup_WatchDog_ForSession(); // Do not set earlier unless you perfectly time the resets of the watchdog timer.
 #ifdef EMILY_KERN_DEBUG
 		Serial.println(F("micrOS Environment is ready!"));
 		Serial.print(F("micrOS User is "));
-		Serial.println(kUSERNAME);
+		Serial.println(userdata.username);
 #endif
 	return;
 }

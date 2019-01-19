@@ -1,6 +1,7 @@
 // 
 // micrOS Storage Media System
 // 
+#include <SPI.h>
 #include <SD.h>
 #include "micrOS_Storage.h"
 #include "kernel.h"
@@ -13,7 +14,6 @@ uint32_t VolumeSize;
  //Pin 10 for MCUFRIEND's SDCard! Change accordingly.
 
 kern_return_t initialize_storage_driver() {
-	SPI.begin();
 	pinMode(10, OUTPUT);
 	digitalWrite(10, HIGH);
 	if (!SD.begin(10, 11, 12, 13)) {
@@ -109,4 +109,3 @@ kern_return_t eraseStorageMediaAtPath() {
 		} while (firstBlock < MicroSD.cardSize());
 	return KERN_SUCCESS;
 }
-

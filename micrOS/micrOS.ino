@@ -1,10 +1,11 @@
+#include <SDConfigFile.h>
+#include <SD.h>
 #include "DeviceTree.h"
 #include "Kern_Errors.h"
 #include "micrOS_Apps.h"
 #include "micrOS_Graphics_Cache.h"
 #include <Vcc.h>
 #include "micrOS_Power_Management.h"
-#include <SD.h>
 #include "micrOS_Storage.h"
 #include "Kernel_Returns.h"
 #include "Stage2Bootloader.h"

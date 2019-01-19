@@ -1,6 +1,7 @@
 #include "kernel.h"
 #include <MCUFRIEND_kbv.h>
 #include "IODisplay.h"
+#include <SDConfigFile.h>
 #include "Kern_Errors.h"
 #include <TouchScreen.h>
 #include "micrOS_Apps.h"
@@ -15,6 +16,7 @@ bool inApp = false;
 bool isWirelessConnected = false;
 int isAlert = 0;
 proc_t ForegroundPID = 99;
+struct micro_config_lsz_user_data userdata; //This is used to hold user configuration from SD Card.
 
 kern_return_t setCurrentForeGroundPID(proc_t pid) {
 	if (pid != 0) {
@@ -35,7 +37,7 @@ kern_return_t micrOS_SwitchBoard() { // micrOS Desktop
 	IODisplay.setCursor(1, 4);
 	IODisplay.setTextColor(WHITE);
 	IODisplay.setTextSize(2);
-	IODisplay.print(kUSERNAME);
+	IODisplay.print(userdata.username);
 	switchboard_set_misc();
 	switchboard_set_wallpaper();
 	get_battery_status();
@@ -269,4 +271,51 @@ kern_return_t sigabrt(kern_return_t panic_reason) {
 		sigareport(9);
 	}
 	return KERN_FAILURE;
+}
+void loadSettings() {
+	if (get_user_config("CONFIG.CFG") != KERN_SUCCESS) {
+		return;
+	}
+#ifdef EMILY_KERN_DEBUG
+	Serial.print(F("Parsed Username is: "));
+	Serial.println(userdata.username);
+	Serial.print(F("Parsed Theme ID is: "));
+	Serial.println(userdata.current_theme_id);
+	Serial.print(F("Is Developer Mode Enabled: "));
+	Serial.println(userdata.is_developer_mode);
+#endif
+	return;
+}
+kern_return_t get_user_config(const char config_file_ds[])
+{
+	const uint8_t CONFIG_LINE_LENGTH = 127;
+	SDConfigFile user_config_file;
+
+	if (!user_config_file.begin(config_file_ds, CONFIG_LINE_LENGTH)) {
+#ifdef EMILY_KERN_DEBUG
+		Serial.print("[configd] Failed to open configuration file: ");
+		Serial.println(config_file_ds);
+#endif
+		return KERN_FAILURE;
+	}
+	while (user_config_file.readNextSetting()) {
+		if (user_config_file.nameIs("micrOS_username")) {
+			userdata.username = user_config_file.getValue();
+		}
+		else if (user_config_file.nameIs("user_current_theme")) {
+
+			userdata.current_theme_id = user_config_file.getIntValue();
+		}
+		else if (user_config_file.nameIs("is_developer_mode")) {
+			userdata.is_developer_mode = user_config_file.getBooleanValue();
+		}
+		else {
+#ifdef EMILY_KERN_DEBUG
+			Serial.print("[configd] No configuration to parse.");
+#endif
+			return KERN_FAILURE;
+		}
+	}
+	user_config_file.end();
+	return KERN_SUCCESS;
 }

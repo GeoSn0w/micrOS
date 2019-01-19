@@ -38,9 +38,18 @@ kern_return_t sigabrt(kern_return_t panic_reason);
 kern_return_t kernRegisterNewApp(void);
 kern_return_t sigareport(int signal);
 extern int issApp;
+kern_return_t get_user_config(const char *config_file_ds);
 kern_return_t kernKillActiveApp(void);
 kern_return_t shutdown(void);
+void loadSettings(void);
 kern_return_t setCurrentForeGroundPID(proc_t pid);
+struct micro_config_lsz_user_data
+{
+	String username;
+	int current_theme_id;
+	bool is_developer_mode;
+};
+extern struct micro_config_lsz_user_data userdata;
 extern proc_t ForegroundPID;
 extern int isAlert;
 extern bool isMenuOpen;
