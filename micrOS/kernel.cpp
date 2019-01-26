@@ -3,6 +3,8 @@
 #include "IODisplay.h"
 #include <SDConfigFile.h>
 #include "Kern_Errors.h"
+#include <avr/wdt.h>
+#include "Stage2Bootloader.h"
 #include <TouchScreen.h>
 #include "micrOS_Apps.h"
 uint16_t BootMode = 0x00000;
@@ -13,6 +15,7 @@ bool isMenuOpen = false;
 bool SysSdutDownReqConfirm = false;
 bool isCharging = false;
 bool inApp = false;
+bool micrOS_reset_trap_watchDog_SLI = false;
 bool isWirelessConnected = false;
 int isAlert = 0;
 proc_t ForegroundPID = 99;
@@ -25,7 +28,20 @@ kern_return_t setCurrentForeGroundPID(proc_t pid) {
 	}
 	return KERN_FAILURE;
 }
-
+kern_return_t performSoftResetDevice() {
+	IODisplay.fillRect(0, 0, 480, 320, 0xB454);
+	setup_WatchDog_ForSession();
+	IODisplay.setTextSize(3);
+	IODisplay.setCursor(76, 165);
+	IODisplay.print(F("Restarting unit..."));
+	micrOS_reset_trap_watchDog_SLI = true;
+	cli();
+	wdt_reset();
+	WDTCSR |= (1 << WDCE) | (1 << WDE);
+	WDTCSR = (1 << WDIE) | (1 << WDE) | (1 << WDP3) | (1 << WDP2) | (0 << WDP1) | (0 << WDP0);
+	sei();
+	return KERN_SUCCESS;
+}
 kern_return_t micrOS_SwitchBoard() { // micrOS Desktop
 	inApp = 0;
 	setCurrentForeGroundPID(99);
@@ -134,46 +150,55 @@ void buildAlert(char message[], char sub[], char title[], int x, int y, int xsub
 		IODisplay.print("[X]");
 	}
 }
-void kern_panic() { //Triggered when a fatal exception occurrs!
+kern_return_t kern_panic() { // Triggered when a fatal exception occurrs!
 	buildAlert("A fatal exception occurred!", generalAdvice, generalTitle, 78, 160, 70, 190, false);
+	return KERN_FAILURE;
 }
 
-kern_return_t touchEvalAtPoint(TSPoint p) {
-	    if (appExitButton) {
+// TSPoint(int16_t x, int16_t y, int16_t z);
+// X is the X axis, Y is the Y axis and Z is the pressure. This is true for the resistive touch screen
+
+kern_return_t touchEvalAtPoint(TSPoint TouchPoint) {
+	if (appExitButton) {
+		micrOS_SwitchBoard();
+		return KERN_SUCCESS;
+	}
+	switch (ForegroundPID) // Switch the application ID to avoid having to do a huge if statement or switch case.
+	{                      // This way, the points checked would only be those who belong to an active screen. 
+	case micro_App_Active_Ses_CoreMenu:
+		if (settingsApp) {
+			CoreSettings();
+		}
+		else if (menuExitButton) {
 			micrOS_SwitchBoard();
-			return KERN_SUCCESS;
 		}
-		switch (ForegroundPID) {
-		case 99:
-			if (menuButton) {
-				menu_init();
-				break;
-			}
-		case 2:
-			//close button
-			break;
-		// Settings 
-		case 1:
-			if (settingsApp) {
-				StorageSettings();
-			}
-			break;
-		case 10:
-			if (isAlert != 1 && performErase) {
-				coreStorageEffaceableAlert();
-			}
-			break;
-		case 11:
-		    if (doErase) {
-				eraseStorageMediaAtPath();
-			}
-			else if (cancelErase) {
-				StorageSettings();
-			}
-			break;
-		default:
+		break;
+	case micro_App_Active_Ses_CoreStorageSettings:
+		if (isAlert != 1 && performErase) {
+			coreStorageEffaceableAlert();
+		}
+		break;
+	case micro_App_Active_Ses_CoreSwitchboard:
+		if (menuButton) {
+			menu_init();
 			break;
 		}
+	case micro_App_Active_Ses_CoreEraseUtils:
+		if (doErase) {
+			eraseStorageMediaAtPath();
+		}
+		else if (cancelErase) {
+			StorageSettings();
+		}
+		break;
+	case micro_App_Active_Ses_CoreSettings:
+		if (performQuickResetWDT) {
+			performSoftResetDevice();
+		}
+		break;
+	default:
+		break;
+	}
 		return KERN_SUCCESS;
 }
 kern_return_t dump() {
@@ -302,6 +327,7 @@ kern_return_t get_user_config(const char config_file_ds[])
 #ifdef EMILY_KERN_DEBUG
 		Serial.print("[configd] Failed to open configuration file: ");
 		Serial.println(config_file_ds);
+		userdata.username = ">micrOS"; // Default to this if the configuration file cannot be fetched.
 #endif
 		return KERN_FAILURE;
 	}

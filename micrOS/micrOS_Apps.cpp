@@ -3,6 +3,7 @@
 #include "kernel.h"
 #include "Kernel_Returns.h"
 #include "micrOS_Storage.h"
+#include "Stage2Bootloader.h"
 
 extern MCUFRIEND_kbv IODisplay;
 
@@ -79,6 +80,41 @@ kern_return_t StorageSettings() {
 	IODisplay.print("Erase Card");
 	//IODisplay.drawBitmap(50, 220, MicroSDCard, 50, 50, WHITE);
 	IODisplay.drawBitmap(128, 221, MicroSDCard, 50, 50, WHITE);
+	//No more icons.
+	AWAIT_TOUCH_SG(); //Wait for touch input.
+	return KERN_SUCCESS;
+}
+kern_return_t CoreSettings() {
+	setCurrentForeGroundPID(5);
+	inApp = 1;
+	set_bar_fill(LessDarkPurple);
+	switchboard_set_bars(LessDarkPurple);
+	IODisplay.fillRect(0, 20, 480, 270, DarkPurple);
+	kernDisplayReload();
+	//App begins
+	IODisplay.setTextSize(3);
+	IODisplay.setCursor(12, 30);
+	IODisplay.print(F("micrOS Settings")); //Label	
+	// SRAM Settings
+	IODisplay.fillRect(1, 67, 480, 35, LessDarkPurple);
+	IODisplay.drawBitmap(5, 73, small_ram_icon, 24, 24, WHITE);
+	IODisplay.setCursor(35, 74);
+	IODisplay.print(F("SRAM Settings"));
+	// General settings (user name and such)
+	IODisplay.fillRect(1, 117, 480, 35, LessDarkPurple);
+	IODisplay.drawBitmap(5, 123, small_gear_icon, 23, 23, WHITE);
+	IODisplay.setCursor(35, 124);
+	IODisplay.print(F("General Settings"));
+	// Storage Media Settings
+	IODisplay.fillRect(1, 167, 480, 35, LessDarkPurple);
+	IODisplay.drawBitmap(5, 173, small_storage_media, 23, 23, WHITE);
+	IODisplay.setCursor(35, 174);
+	IODisplay.print(F("Storage Media Settings"));
+	// Reset switch (quick)
+	IODisplay.fillRect(1, 217, 480, 35, LessDarkPurple);
+	IODisplay.drawBitmap(5, 223, shutdown_icon, 23, 23, WHITE);
+	IODisplay.setCursor(35, 224);
+	IODisplay.print(F("Reboot Unit"));
 	//No more icons.
 	AWAIT_TOUCH_SG(); //Wait for touch input.
 	return KERN_SUCCESS;

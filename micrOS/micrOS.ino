@@ -34,11 +34,14 @@ void setup() {
 }
 
 void loop() {
-	wdt_reset(); // Reset the watchdog
+	if (!micrOS_reset_trap_watchDog_SLI) {
+		wdt_reset(); // Reset the watchdog
+	}
 	TSPoint p = ts.getPoint();
 	AWAIT_TOUCH_SG();
 	if (p.z > MINPRESSURE && p.z < MAXPRESSURE) {
-		p.x = constrain(map(p.x, TS_MAXX, TS_MINX, 0, RESOLUTION_W),0, RESOLUTION_W); //This is necessary to be able to have proper touch control. Wish I knew this earlier...
+		//This is necessary to be able to have proper touch control. Wish I knew this earlier...
+		p.x = constrain(map(p.x, TS_MAXX, TS_MINX, 0, RESOLUTION_W),0, RESOLUTION_W);
 		p.y = constrain(map(p.y, TS_MINY, TS_MAXY, 0, RESOLUTION_H),0, RESOLUTION_H);
 #ifdef EMILY_KERN_DEBUG
 		Serial.print(F("[TouchEvent] Registered touch at X = ")); Serial.print(p.x); Serial.print(F(" | Y = ")); Serial.println(p.y);

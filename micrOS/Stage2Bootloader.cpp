@@ -16,13 +16,13 @@ micrOS Arduino Operating System by GeoSn0w (@FCE365)
 #include <avr/wdt.h>
 #include "DeviceTree.h"
 
-
 extern MCUFRIEND_kbv IODisplay;
 byte signature1, signature2, signature3, lockBits, HighFuse, LowFuse, ExtFuse;
 #define _GET_LOCK_BITS() __AddrToZByteToSPMCR_LPM( (void flash *) 0x0001, 0x09 )
 #define _GET_LOW_FUSES() __AddrToZByteToSPMCR_LPM( (void flash *) 0x0000, 0x09 )
 #define _GET_HIGH_FUSES() __AddrToZByteToSPMCR_LPM( (void flash *) 0x0003, 0x09 )
 #define _GET_EXTENDED_FUSES() __AddrToZByteToSPMCR_LPM( (void flash *) 0x0002, 0x09 )
+
 // I defined these for you so that you don't have to mess with the register too much.
 // If you have any questions, drop me a line at @FCE365
 #define WatchDog16ms (1 << WDIE) | (1 << WDE) | (0 << WDP3) | (0 << WDP2) | (0 << WDP1) |(0 << WDP0) // 16ms
@@ -30,7 +30,6 @@ byte signature1, signature2, signature3, lockBits, HighFuse, LowFuse, ExtFuse;
 #define WatchDog64ms (1 << WDIE) | (1 << WDE) | (0 << WDP3) | (0 << WDP2) | (1 << WDP1) |(0 << WDP0) // 64ms
 #define WatchDog4Secs (1 << WDIE) | (1 << WDE) | (1 << WDP3) | (1 << WDP2) | (0 << WDP1) |(0 << WDP0) // 4 seconds
 #define WatchDog8Secs (1 << WDIE) | (1 << WDE) | (1 << WDP3) | (0 << WDP2) | (0 << WDP1) |(1 << WDP0) // 8 Seconds, default on micrOS.
-
 void setup_WatchDog_ForSession() {
 	cli(); // Disable all interrupts to prevent accidental failure in configuration!
 	wdt_reset(); //Reset the Watchdog to prevent an accidental reset during config
@@ -43,10 +42,9 @@ void setup_WatchDog_ForSession() {
 			    */
 	WDTCSR |= (1 << WDCE) | (1 << WDE); //Set the watchdog to Config mode
 	//It's advised to do the settings right after entering the configuration mode because it has to be done in 4 CPU cycles.
-
 	WDTCSR = WatchDog8Secs;
 	sei(); // Re-enable all interrupts. The configuration is done. Do keep in mind that the Watchdog itself creates interrupts so we must re-enable these.
-	// You can also set an interrupt with ISR(WDT_vect){ // }; but avoid Serial stuff as it may prevent the watchdog from resetting properly.
+	       // You can also set an interrupt with ISR(WDT_vect){ // }; but avoid Serial stuff as it may prevent the watchdog from resetting properly.
 	return;
 }
 void get_device_signature()

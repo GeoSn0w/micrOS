@@ -34,6 +34,7 @@ kern_return_t micrOS_SwitchBoard(void);
 kern_return_t AWAIT_TOUCH_SG(void);
 void buildAlert(char message[], char sub[], char title[], int x, int y, int xsub, int ysub, bool dismissable);
 kern_return_t kernDisplayReload(void);
+kern_return_t performSoftResetDevice(void);
 kern_return_t sigabrt(kern_return_t panic_reason);
 kern_return_t kernRegisterNewApp(void);
 kern_return_t sigareport(int signal);
@@ -52,6 +53,7 @@ struct micro_config_lsz_user_data
 extern struct micro_config_lsz_user_data userdata;
 extern proc_t ForegroundPID;
 extern int isAlert;
+extern bool micrOS_reset_trap_watchDog_SLI;
 extern bool isMenuOpen;
 extern bool SysSdutDownReqConfirm;
 extern bool isCharging;
