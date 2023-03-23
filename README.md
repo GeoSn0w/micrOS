@@ -16,3 +16,9 @@ The UI is an original one, I did not inspire it from a different product (if any
 </p>
 
 <p>I am currently working actively on this project so features will be added. The reason I uploaded the source code in such an alpha stage is that some people were curious, especially when it comes to the TouchScreen and the graphics.</p>
+
+### My Websites
+* <a href="https://idevicecentral.com">Latest iOS 16 Jailbreak News</a>
+* <a href="https://gametutorialpro.com">Latest Gaming News & Guides</a>
+* <a href="https://jailbreak.fce365.info">iOS Jailbreak Forum</a>
+* <a href="https://gsmbypass.com">Latest FRP Bypass Tools & Guides</a>
