@@ -1,6 +1,7 @@
 # micrOS
 An Arduino Mega Operating System With TFT TouchScreen and Micro SD Card Support.
-This project is abandonware by now, but SyntropyOS isn't. Syntropy is the direct descendant of this project, but for ESP32. Coming soon.
+
+This project is abandonware by now, but <a href="https://github.com/ForenZes/SyntropyOS">SyntropyOS</a> isn't. Syntropy is the direct descendant of this project, but for ESP32. Coming soon.
 ### Proudly made by a real human long before AI was even a thing.
 
 <p>This is an operating system I have written from scratch for Arduino Mega. It is optimized to work with MCUFriend's 3.5 inch TFT TouchScreen shield and I am currently working to support the SIM900 GSM Shield for SIM Card Support. Tests on this shield and the OS have been conclusive, but I still have to fix stuff here and there, therefore I am not releasing the BaseBand (GSM Shield) code for it yet. It should, however, boot without that with a small kernel patch, refer to patches.</p>
